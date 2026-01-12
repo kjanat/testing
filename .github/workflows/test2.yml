@@ -1,25 +1,24 @@
-name: Matrix
+name: Matrix Two
 on: { push: {}, workflow_dispatch: {} }
 jobs:
-  build:
-    name: Build (${{ matrix.arch }}-${{ matrix.env }})
+  buildtwo:
+    name: Build Two (${{ matrix.arch }}-${{ matrix.env }})
     runs-on: ${{ matrix.os }}
-    if: false
     strategy:
       fail-fast: false
       matrix:
         arch: [x86_64, aarch64]
         env:
-          - apple-darwin
-          - pc-windows-msvc
           - unknown-linux-gnu
           - unknown-linux-musl
+          - apple-darwin
+          - pc-windows-msvc
         include:
           # Map env -> OS (flat, no nested objects)
-          - { env: apple-darwin, os: macos-latest }
-          - { env: pc-windows-msvc, os: windows-latest, archive: zip }
           - { env: unknown-linux-gnu, os: ubuntu-latest }
           - { env: unknown-linux-musl, os: ubuntu-latest }
+          - { env: apple-darwin, os: macos-latest }
+          - { env: pc-windows-msvc, os: windows-latest, archive: zip }
           # Cross only for Linux aarch64
           - { arch: aarch64, env: unknown-linux-gnu, cross: true }
           - { arch: aarch64, env: unknown-linux-musl, cross: true }
