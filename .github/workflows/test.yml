@@ -1,0 +1,43 @@
+name: "Matrix"
+on: workflow_dispatch
+jobs:
+  build:
+    name: Build (${{ matrix.arch }}-${{ matrix.env }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x86_64, aarch64]
+        env:
+          [unknown-linux-gnu, unknown-linux-musl, apple-darwin, pc-windows-msvc]
+        include:
+          # Map env -> OS (flat, no nested objects)
+          - { env: unknown-linux-gnu, os: ubuntu-latest }
+          - { env: unknown-linux-musl, os: ubuntu-latest }
+          - { env: apple-darwin, os: macos-latest }
+          - { env: pc-windows-msvc, os: windows-latest, archive: zip }
+
+          # Cross only for Linux aarch64
+          - { arch: aarch64, env: unknown-linux-gnu, cross: true }
+          - { arch: aarch64, env: unknown-linux-musl, cross: true }
+
+        exclude:
+          # Prevent nonsense combos
+          - { env: apple-darwin, arch: x86_64 } # remove if you *do* want intel mac builds
+          # If you *do* want both mac arches, delete the above line.
+
+    env:
+      TARGET: ${{ matrix.arch }}-${{ matrix.env }}
+      ARCHIVE: ${{ matrix.archive || 'tar.gz' }}
+      CROSS: ${{ matrix.cross || 'false' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show resolved matrix
+        shell: bash
+        run: |
+          echo "os=${{ matrix.os }}"
+          echo "target=${TARGET}"
+          echo "archive=${ARCHIVE}"
+          echo "cross=${CROSS}"
