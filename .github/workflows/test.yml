@@ -1,10 +1,9 @@
 name: Matrix
-on: { push: {}, workflow_dispatch: {} }
+on: { workflow_dispatch: {} }
 jobs:
   build:
     name: Build (${{ matrix.arch }}-${{ matrix.env }})
     runs-on: ${{ matrix.os }}
-    if: false
     strategy:
       fail-fast: false
       matrix:
